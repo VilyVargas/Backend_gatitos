@@ -1,15 +1,17 @@
 import db from "../firebase.js";
 import supabase from "../supabase.js";
 
+// Coordenadas de Juigalpa, Chontales (Nicaragua)
+const JUIGALPA = {
+  nombre: "Juigalpa, Chontales",
+  lat: 12.1067,
+  lon: -85.3647,
+};
+
 export const obtenerClima = async (req, res) => {
   try {
-    const { lat, lon } = req.query;
-
-    if (!lat || !lon) {
-      return res.status(400).json({
-        mensaje: "Se requieren los parámetros lat y lon.",
-      });
-    }
+    const { lat = JUIGALPA.lat, lon = JUIGALPA.lon } = req.query;
+    const esJuigalpa = !req.query.lat && !req.query.lon;
 
     const latitude = parseFloat(lat);
     const longitude = parseFloat(lon);
@@ -41,6 +43,7 @@ export const obtenerClima = async (req, res) => {
 
     res.status(200).json({
       ubicacion: {
+        nombre: esJuigalpa ? JUIGALPA.nombre : "Personalizada",
         latitud: latitude,
         longitud: longitude,
       },
