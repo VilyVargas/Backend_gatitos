@@ -1,17 +1,15 @@
 import db from "../firebase.js";
 import supabase from "../supabase.js";
 
-// Coordenadas de Juigalpa, Chontales (Nicaragua)
-const JUIGALPA = {
-  nombre: "Juigalpa, Chontales",
-  lat: 12.1067,
-  lon: -85.3647,
-};
-
 export const obtenerClima = async (req, res) => {
   try {
-    const { lat = JUIGALPA.lat, lon = JUIGALPA.lon } = req.query;
-    const esJuigalpa = !req.query.lat && !req.query.lon;
+    const { lat, lon } = req.query;
+
+    if (!lat || !lon) {
+      return res.status(400).json({
+        mensaje: "Se requieren los parámetros lat y lon.",
+      });
+    }
 
     const latitude = parseFloat(lat);
     const longitude = parseFloat(lon);
@@ -22,7 +20,8 @@ export const obtenerClima = async (req, res) => {
       });
     }
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability&forecast_hours=12&timezone=auto`;
+const url = `https://api.open-meteo.com/v1/forecast?latitude=12.10591&longitude=-85.36549&hourly=temperature_2m,precipitation_probability&forecast_hours=12&timezone=auto`;
+
 
     const respuesta = await fetch(url);
     const data = await respuesta.json();
@@ -43,7 +42,6 @@ export const obtenerClima = async (req, res) => {
 
     res.status(200).json({
       ubicacion: {
-        nombre: esJuigalpa ? JUIGALPA.nombre : "Personalizada",
         latitud: latitude,
         longitud: longitude,
       },
